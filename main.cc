@@ -1,13 +1,16 @@
 #include <iostream>
 #include <gmpxx.h>
 #include "SimpleFactorization.h"
+#include "SimpleFactorizationBinary.h"
 
 using namespace std;
 
 
 int main(int argc, char **argv) {
+  // 4801 * 10093 = 48456493
   mpz_class candidate = 48456493;
-  SimpleFactorization factorizer;
+  // SimpleFactorization factorizer;
+  SimpleFactorizationBinary factorizer;
   double progress;
 
   factorizer.setRange1(0, 15000);
