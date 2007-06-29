@@ -1,70 +1,102 @@
 #include "SimpleFactorization.h"
 #include <gmpxx.h>
+#include <iostream>
 
-SimpleFactorization::SimpleFactorization() {
-  range1_min = 0;
-  range1_max = 0;
-  range2_min = 0;
-  range2_max = 0;
+using namespace std;
 
-  factor1    = 0;
-  factor2    = 0;
+SimpleFactorization::SimpleFactorization(mpz_class &arg) {
+  candidate = arg;
+  this->setRange(2, sqrt(arg));
+  factor = 0;
 }
 
-bool SimpleFactorization::factorize(const mpz_class &candidate) {
-  if (range1_min * range2_min > candidate)
-    return false;
-  if (range1_max * range2_max < candidate)
+SimpleFactorization::SimpleFactorization(const char* arg) {
+  candidate.set_str(arg, 10);
+  this->setRange(2, sqrt(candidate));
+  factor = 0;
+}
+
+bool SimpleFactorization::factorize() {
+  if (range_max < range_min)
     return false;
 
-  factor1 = range1_min;
-  while (factor1 <= range1_max) {
-    // find probable prime
-    while (mpz_probab_prime_p(factor1.get_mpz_t(), 5) == 0)
-      factor1++;
-    
-    factor2 = range2_min;
-    // find probable prime
-    while (factor2 <= range2_max) {
-      while (mpz_probab_prime_p(factor2.get_mpz_t(), 5) == 0)
-	factor2++;
+  factor = range_min;
+  if (factor < 2)
+    factor = 2;
 
-      if (factor1 * factor2 == candidate) {
-	return true;
-      }
-      factor2 += 2;
+  while (factor <= range_max) {
+    if (mpz_divisible_p(candidate.get_mpz_t(), 
+			factor.get_mpz_t())) {
+      return 1;
     }
-
-    factor1 += 2;
+    factor++;
+    if (mpz_even_p(factor.get_mpz_t()))
+      factor++;
   }
-
   return false;
 }
 
-void SimpleFactorization::setRange1(const mpz_class &min, const mpz_class &max) {
-  range1_min = min;
-  range1_max = max;
-  range1_int = range1_max - range1_min;
+
+void SimpleFactorization::setMin(const mpz_class &min) {
+  range_min = 2;
+
+  if (min > 2)
+    range_min = min;
+
+  range_int = range_max - range_min;
 }
 
-void SimpleFactorization::setRange2(const mpz_class &min, const mpz_class &max) {
-  range2_min = min;
-  range2_max = max;
+void SimpleFactorization::setMin(const char* min) {
+  mpz_class tmp(min);
+  this->setMin(tmp);
 }
 
-const mpz_class& SimpleFactorization::getFactor1() {
-  return factor1;
+const mpz_class& SimpleFactorization::getMin() {
+  return range_min;
 }
 
-const mpz_class& SimpleFactorization::getFactor2() {
-  return factor2;
+const mpz_class& SimpleFactorization::getMax() {
+  return range_max;
+}
+
+void SimpleFactorization::setMax(const mpz_class &max) {
+  range_max = sqrt(candidate);
+  
+  if (max < range_max)
+    range_max = max;
+
+  range_int = range_max - range_min;
+}
+
+void SimpleFactorization::setMax(const char* max) {
+  mpz_class tmp(max);
+  this->setMax(tmp);
+}
+
+
+void SimpleFactorization::setRange(const mpz_class &min, const mpz_class &max) {
+  this->setMin(min);
+  this->setMax(max);
+}
+void SimpleFactorization::setRange(const char* min, const char* max) {
+  this->setMin(min);
+  this->setMax(max);
+}
+
+const mpz_class& SimpleFactorization::getFactor() {
+  return factor;
+}
+
+const mpz_class& SimpleFactorization::getCandidate() {
+  return candidate;
 }
 
 double SimpleFactorization::getProgress() {
-  if (range1_int > 0) {
-    mpz_class total_progress;
-    total_progress = (100 * (factor1 - range1_min)) / range1_int;
-    return total_progress.get_ui() / 100.0;
+  mpf_class total = factor - range_min;
+  mpf_class progress = 0;
+
+  if (range_int > 0) {
+    progress = total / range_int;
   }
-  return 0.0;
+  return progress.get_d();
 }

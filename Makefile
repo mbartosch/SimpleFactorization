@@ -1,7 +1,7 @@
-CXXFLAGS=-I/opt/local/include
+CXXFLAGS=-I/opt/local/include -g
 LDFLAGS=-L/opt/local/lib -lgmp -lgmpxx
 
-OBJ=SimpleFactorization.o SimpleFactorizationBinary.o
+OBJ=SimpleFactorization.o
 
 all: simple-factorization
 

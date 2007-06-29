@@ -13,25 +13,32 @@ class CProgressModel
 
 class SimpleFactorization : public CProgressModel {
  public:
-  SimpleFactorization();
+  SimpleFactorization(mpz_class &arg);
+  SimpleFactorization(const char* arg);
   
-  virtual void setRange1(const mpz_class &min, const mpz_class &max);
-  virtual void setRange2(const mpz_class &min, const mpz_class &max);
+  virtual void setMin(const mpz_class &min);
+  virtual void setMin(const char* arg);
+  virtual const mpz_class& getMin();
 
-  virtual bool factorize(const mpz_class &candidate);
+  virtual void setMax(const mpz_class &max);
+  virtual void setMax(const char* max);
+  virtual const mpz_class& getMax();
 
-  virtual const mpz_class& getFactor1();
-  virtual const mpz_class& getFactor2();
+  virtual void setRange(const mpz_class &min, const mpz_class &max);
+  virtual void setRange(const char* min, const char* max);
+
+  virtual bool factorize();
+
+  virtual const mpz_class& getFactor();
+  virtual const mpz_class& getCandidate();
   virtual double getProgress();
   
  protected:
-  mpz_class range1_min;
-  mpz_class range1_max;
-  mpz_class range1_int;
-  mpz_class range2_min;
-  mpz_class range2_max;
-  mpz_class factor1;
-  mpz_class factor2;
+  mpz_class range_min;
+  mpz_class range_max;
+  mpz_class range_int;
+  mpz_class factor;
+  mpz_class candidate;
 };
 
 
