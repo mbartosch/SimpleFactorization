@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
 	 << f << " for " << factorizer.getCandidate() << endl;
 
     progress = factorizer.getProgress();
-    cout << "Pct: " << progress << endl;
+    cout << "(At " << progress * 100 << "% of search range.)" << endl;
     
   } else {
     cout << "No factorization found for " << factorizer.getCandidate() << endl;
