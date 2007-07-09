@@ -15,16 +15,22 @@ void usage() {
   cout << "Factorize the specified candidate number using the naive try-to-divide-approach" << endl << endl;
   cout << "Options:" << endl;
   cout << "  --help         this help text" << endl;
+  cout << "  --optimize-3   don't test if sum-of-digits is 3" << endl;
+  cout << "  --optimize-5   don't test if last digit is 5" << endl;
+  cout << "  --optimize     enable all optimizations" << endl;
   cout << "  --min <VALUE>  lower bound for search (default: 2)" << endl;
-  cout << "  --max <VALUE>  upper bound for search (default: square root of candidate)" << endl << endl;
+  cout << "  --max <VALUE>  upper bound for search (default: square root of candidate)" << endl;
+  cout << "  --statistics   print number of divisions" << endl;
+  cout << endl;
   exit(0);
 }
 
 int main(int argc, char **argv) {
-  mpz_class candidate;
+  mpz_class candidate = 0;
   char *min = NULL;
   char *max = NULL;
   int ii;
+  unsigned int options = SIMPLE_FACTORIZATION_OPTIMIZE_2;
 
   if (argc == 1) usage();
 
@@ -52,11 +58,45 @@ int main(int argc, char **argv) {
       continue;
     }
 
-    if (*argv[ii] == '-' && (strlen(argv[ii]) > 1)) {
+    if (strcmp(argv[ii], "--verbose") == 0) {
+      ii++;
+      options |= SIMPLE_FACTORIZATION_VERBOSE;
+      continue;
+    }
+
+    if (strcmp(argv[ii], "--statistics") == 0) {
+      ii++;
+      options |= SIMPLE_FACTORIZATION_STATISTICS;
+      continue;
+    }
+
+    if (strcmp(argv[ii], "--optimize-3") == 0) {
+      ii++;
+      options |= SIMPLE_FACTORIZATION_OPTIMIZE_3;
+      continue;
+    }
+
+    if (strcmp(argv[ii], "--optimize-5") == 0) {
+      ii++;
+      options |= SIMPLE_FACTORIZATION_OPTIMIZE_5;
+      continue;
+    }
+
+    if (strcmp(argv[ii], "--optimize") == 0) {
+      ii++;
+      options |= SIMPLE_FACTORIZATION_OPTIMIZE_3;
+      options |= SIMPLE_FACTORIZATION_OPTIMIZE_5;
+      continue;
+    }
+
+    if (*argv[ii] == '-') {
       fprintf(stderr, "Unrecognized option %s\n", argv[ii]);
       exit(1);
     }
 
+    if (candidate != 0)
+      usage();
+ 
     candidate.set_str(argv[ii], 10);
     ii++;
   }
@@ -64,12 +104,15 @@ int main(int argc, char **argv) {
   // 4801 * 10093 = 48456493
 
   SimpleFactorization factorizer(candidate);
+  factorizer.setOptions(options);
+
   if (min)
     factorizer.setMin(min);
   if (max)
-     factorizer.setMax(max);
+    factorizer.setMax(max);
+
  
-  cout << "Trying to factorize " << factorizer.getCandidate() << endl;
+  cout << endl << "Trying to factorize " << factorizer.getCandidate() << endl;
   cout << "in range: " 
        << factorizer.getMin() << " - " << factorizer.getMax()
        << endl;
@@ -83,13 +126,16 @@ int main(int argc, char **argv) {
 
     cout << endl 
 	 << "Found factor: " 
-	 << f << " for " << factorizer.getCandidate() << endl;
+	 << f << endl;
 
     progress = factorizer.getProgress();
     cout << "(At " << progress * 100 << "% of search range.)" << endl;
+    if (factorizer.getOptions() & SIMPLE_FACTORIZATION_STATISTICS) {
+      cout << "Performed " << factorizer.getNumberOfDivisions() << " test divisions." << endl;
+    }
     
   } else {
-    cout << "No factorization found for " << factorizer.getCandidate() << endl;
+    cout << "No factorization found." << endl;
   }
 }
 

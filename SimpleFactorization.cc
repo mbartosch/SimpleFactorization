@@ -1,6 +1,7 @@
 #include "SimpleFactorization.h"
 #include <gmpxx.h>
 #include <iostream>
+#include <stdio.h>
 
 using namespace std;
 
@@ -8,12 +9,16 @@ SimpleFactorization::SimpleFactorization(mpz_class &arg) {
   candidate = arg;
   this->setRange(2, sqrt(arg));
   factor = 0;
+  options = SIMPLE_FACTORIZATION_OPTIMIZE_2;
+  nr_of_divisions = 0;
 }
 
 SimpleFactorization::SimpleFactorization(const char* arg) {
   candidate.set_str(arg, 10);
   this->setRange(2, sqrt(candidate));
   factor = 0;
+  options = SIMPLE_FACTORIZATION_OPTIMIZE_2;
+  nr_of_divisions = 0;
 }
 
 bool SimpleFactorization::factorize() {
@@ -25,17 +30,69 @@ bool SimpleFactorization::factorize() {
     factor = 2;
 
   while (factor <= range_max) {
+    if ((options & SIMPLE_FACTORIZATION_OPTIMIZE_2)
+	&& mpz_even_p(factor.get_mpz_t())) {
+      factor++;
+      continue;
+    }
+
+    if ((options & SIMPLE_FACTORIZATION_OPTIMIZE_3) ||
+	(options & SIMPLE_FACTORIZATION_OPTIMIZE_5)) {
+      char* factor_as_string = NULL;
+      factor_as_string = mpz_get_str(NULL, 10, factor.get_mpz_t());
+      char lastdigit = factor_as_string[strlen(factor_as_string) - 1];
+      bool skip = false;
+
+      if (options & SIMPLE_FACTORIZATION_OPTIMIZE_5) {
+	if (lastdigit == '5') {
+	  skip = true;
+	}
+      }
+
+      if (! skip && (options & SIMPLE_FACTORIZATION_OPTIMIZE_3)) {
+	int sum_of_digits = 0;
+	int len, ii;
+	len = strlen(factor_as_string);
+	
+	for (ii = 0; ii < len; ii++) {
+	  sum_of_digits += factor_as_string[ii] - '0';
+	}
+	
+	if (sum_of_digits % 3 == 0) {
+	  skip = true;
+	}
+      }
+
+      if (factor_as_string) {
+	free(factor_as_string);
+	factor_as_string = NULL;
+      }
+
+      if (skip) {
+	factor++;
+	continue;
+      }
+    }      
+
+    if (options & SIMPLE_FACTORIZATION_STATISTICS)
+      nr_of_divisions++;
+
     if (mpz_divisible_p(candidate.get_mpz_t(), 
 			factor.get_mpz_t())) {
       return 1;
     }
     factor++;
-    if (mpz_even_p(factor.get_mpz_t()))
-      factor++;
   }
   return false;
 }
 
+void SimpleFactorization::setOptions(const unsigned int arg) {
+  options = arg;
+}
+
+unsigned int SimpleFactorization::getOptions() {
+  return options;
+}
 
 void SimpleFactorization::setMin(const mpz_class &min) {
   range_min = 2;
@@ -89,6 +146,10 @@ const mpz_class& SimpleFactorization::getFactor() {
 
 const mpz_class& SimpleFactorization::getCandidate() {
   return candidate;
+}
+
+const mpz_class& SimpleFactorization::getNumberOfDivisions() {
+  return nr_of_divisions;
 }
 
 double SimpleFactorization::getProgress() {

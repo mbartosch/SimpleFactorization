@@ -3,6 +3,12 @@
 
 #include <gmpxx.h>
 
+#define SIMPLE_FACTORIZATION_VERBOSE    0x0001
+#define SIMPLE_FACTORIZATION_STATISTICS 0x0002
+
+#define SIMPLE_FACTORIZATION_OPTIMIZE_2 0x0100
+#define SIMPLE_FACTORIZATION_OPTIMIZE_3 0x0200
+#define SIMPLE_FACTORIZATION_OPTIMIZE_5 0x0400
 
 class CProgressModel 
 { 
@@ -15,6 +21,9 @@ class SimpleFactorization : public CProgressModel {
  public:
   SimpleFactorization(mpz_class &arg);
   SimpleFactorization(const char* arg);
+
+  virtual void setOptions(const unsigned int arg);
+  virtual unsigned int getOptions();
   
   virtual void setMin(const mpz_class &min);
   virtual void setMin(const char* arg);
@@ -31,6 +40,8 @@ class SimpleFactorization : public CProgressModel {
 
   virtual const mpz_class& getFactor();
   virtual const mpz_class& getCandidate();
+  virtual const mpz_class& getNumberOfDivisions();
+
   virtual double getProgress();
   
  protected:
@@ -39,6 +50,9 @@ class SimpleFactorization : public CProgressModel {
   mpz_class range_int;
   mpz_class factor;
   mpz_class candidate;
+  mpz_class nr_of_divisions;
+
+  unsigned int options;
 };
 
 
