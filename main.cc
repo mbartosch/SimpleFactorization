@@ -3,7 +3,7 @@
 #include "SimpleFactorization.h"
 // #include "SimpleFactorizationBinary.h"
 
-#define VERSION "0.1.0"
+#define VERSION "0.2.0"
 
 
 using namespace std;
@@ -20,7 +20,6 @@ void usage() {
   cout << "  --optimize     enable all optimizations" << endl;
   cout << "  --min <VALUE>  lower bound for search (default: 2)" << endl;
   cout << "  --max <VALUE>  upper bound for search (default: square root of candidate)" << endl;
-  cout << "  --statistics   print number of divisions" << endl;
   cout << endl;
   exit(0);
 }
@@ -61,12 +60,6 @@ int main(int argc, char **argv) {
     if (strcmp(argv[ii], "--verbose") == 0) {
       ii++;
       options |= SIMPLE_FACTORIZATION_VERBOSE;
-      continue;
-    }
-
-    if (strcmp(argv[ii], "--statistics") == 0) {
-      ii++;
-      options |= SIMPLE_FACTORIZATION_STATISTICS;
       continue;
     }
 
@@ -130,9 +123,7 @@ int main(int argc, char **argv) {
 
     progress = factorizer.getProgress();
     cout << "(At " << progress * 100 << "% of search range.)" << endl;
-    if (factorizer.getOptions() & SIMPLE_FACTORIZATION_STATISTICS) {
-      cout << "Performed " << factorizer.getNumberOfDivisions() << " test divisions." << endl;
-    }
+    cout << "Performed " << factorizer.getNumberOfDivisions() << " test divisions." << endl;
     
   } else {
     cout << "No factorization found." << endl;

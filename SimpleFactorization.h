@@ -40,7 +40,7 @@ class SimpleFactorization : public CProgressModel {
 
   virtual const mpz_class& getFactor();
   virtual const mpz_class& getCandidate();
-  virtual const mpz_class& getNumberOfDivisions();
+  virtual const long long getNumberOfDivisions();
 
   virtual double getProgress();
   
@@ -50,7 +50,7 @@ class SimpleFactorization : public CProgressModel {
   mpz_class range_int;
   mpz_class factor;
   mpz_class candidate;
-  mpz_class nr_of_divisions;
+  long long nr_of_divisions;
 
   unsigned int options;
 };

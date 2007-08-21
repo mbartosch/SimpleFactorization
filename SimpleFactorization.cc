@@ -74,8 +74,7 @@ bool SimpleFactorization::factorize() {
       }
     }      
 
-    if (options & SIMPLE_FACTORIZATION_STATISTICS)
-      nr_of_divisions++;
+    nr_of_divisions++;
 
     if (mpz_divisible_p(candidate.get_mpz_t(), 
 			factor.get_mpz_t())) {
@@ -148,7 +147,7 @@ const mpz_class& SimpleFactorization::getCandidate() {
   return candidate;
 }
 
-const mpz_class& SimpleFactorization::getNumberOfDivisions() {
+const long long SimpleFactorization::getNumberOfDivisions() {
   return nr_of_divisions;
 }
 
