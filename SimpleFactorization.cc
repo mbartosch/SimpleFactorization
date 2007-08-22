@@ -21,6 +21,58 @@ SimpleFactorization::SimpleFactorization(const char* arg) {
   nr_of_divisions = 0;
 }
 
+
+bool SimpleFactorization::is_probable_prime(const mpz_class &arg) {
+    if ((options & SIMPLE_FACTORIZATION_OPTIMIZE_2)
+	&& mpz_even_p(arg.get_mpz_t())
+	&& arg != 2) {
+      return false;
+    }
+
+    if ((options & SIMPLE_FACTORIZATION_OPTIMIZE_3) ||
+	(options & SIMPLE_FACTORIZATION_OPTIMIZE_5)) {
+      char* arg_as_string = NULL;
+      arg_as_string = mpz_get_str(NULL, 10, arg.get_mpz_t());
+      char lastdigit = arg_as_string[strlen(arg_as_string) - 1];
+
+      if (options & SIMPLE_FACTORIZATION_OPTIMIZE_5) {
+	if (lastdigit == '5') {
+	  if (arg_as_string) {
+	    free(arg_as_string);
+	    arg_as_string = NULL;
+	  }
+	  return false;
+	}
+      }
+
+      if (options & SIMPLE_FACTORIZATION_OPTIMIZE_3) {
+	int sum_of_digits = 0;
+	int len, ii;
+	len = strlen(arg_as_string);
+	
+	for (ii = 0; ii < len; ii++) {
+	  sum_of_digits += arg_as_string[ii] - '0';
+	}
+	
+	if (sum_of_digits % 3 == 0) {
+	  if (arg_as_string) {
+	    free(arg_as_string);
+	    arg_as_string = NULL;
+	  }
+	  return false;
+	}
+      }
+
+      if (arg_as_string) {
+	free(arg_as_string);
+	arg_as_string = NULL;
+      }
+    }  
+
+    return true;
+}
+
+
 bool SimpleFactorization::factorize() {
   if (range_max < range_min)
     return false;
@@ -29,50 +81,10 @@ bool SimpleFactorization::factorize() {
     factor = 2;
 
   while (factor <= range_max) {
-    if ((options & SIMPLE_FACTORIZATION_OPTIMIZE_2)
-	&& mpz_even_p(factor.get_mpz_t())
-	&& factor != 2) {
+    if (! this->is_probable_prime(factor)) {
       factor++;
       continue;
     }
-
-    if ((options & SIMPLE_FACTORIZATION_OPTIMIZE_3) ||
-	(options & SIMPLE_FACTORIZATION_OPTIMIZE_5)) {
-      char* factor_as_string = NULL;
-      factor_as_string = mpz_get_str(NULL, 10, factor.get_mpz_t());
-      char lastdigit = factor_as_string[strlen(factor_as_string) - 1];
-      bool skip = false;
-
-      if (options & SIMPLE_FACTORIZATION_OPTIMIZE_5) {
-	if (lastdigit == '5') {
-	  skip = true;
-	}
-      }
-
-      if (! skip && (options & SIMPLE_FACTORIZATION_OPTIMIZE_3)) {
-	int sum_of_digits = 0;
-	int len, ii;
-	len = strlen(factor_as_string);
-	
-	for (ii = 0; ii < len; ii++) {
-	  sum_of_digits += factor_as_string[ii] - '0';
-	}
-	
-	if (sum_of_digits % 3 == 0) {
-	  skip = true;
-	}
-      }
-
-      if (factor_as_string) {
-	free(factor_as_string);
-	factor_as_string = NULL;
-      }
-
-      if (skip) {
-	factor++;
-	continue;
-      }
-    }      
 
 #ifdef DEBUG
     cout << "Test: " << factor << endl;

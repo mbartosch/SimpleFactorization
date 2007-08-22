@@ -45,6 +45,8 @@ class SimpleFactorization : public CProgressModel {
   virtual double getProgress();
   
  protected:
+  virtual bool is_probable_prime(const mpz_class &arg);
+
   mpz_class range_min;
   mpz_class range_max;
   mpz_class search_max;

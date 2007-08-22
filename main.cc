@@ -141,6 +141,8 @@ int main(int argc, char **argv) {
 	cout << " * " << f;
       }
       cout << " * " << factorizer.getCandidate();
+    } else {
+      cout << " (lowest factor of factorization)";
     }
 
     cout << endl;
