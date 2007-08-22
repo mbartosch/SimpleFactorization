@@ -8,7 +8,7 @@ using namespace std;
 SimpleFactorization::SimpleFactorization(mpz_class &arg) {
   candidate = arg;
   this->setRange(2, sqrt(arg));
-  factor = 0;
+  factor = 2;
   options = SIMPLE_FACTORIZATION_OPTIMIZE_2;
   nr_of_divisions = 0;
 }
@@ -16,7 +16,7 @@ SimpleFactorization::SimpleFactorization(mpz_class &arg) {
 SimpleFactorization::SimpleFactorization(const char* arg) {
   candidate.set_str(arg, 10);
   this->setRange(2, sqrt(candidate));
-  factor = 0;
+  factor = 2;
   options = SIMPLE_FACTORIZATION_OPTIMIZE_2;
   nr_of_divisions = 0;
 }
@@ -25,13 +25,13 @@ bool SimpleFactorization::factorize() {
   if (range_max < range_min)
     return false;
 
-  factor = range_min;
   if (factor < 2)
     factor = 2;
 
   while (factor <= range_max) {
     if ((options & SIMPLE_FACTORIZATION_OPTIMIZE_2)
-	&& mpz_even_p(factor.get_mpz_t())) {
+	&& mpz_even_p(factor.get_mpz_t())
+	&& factor != 2) {
       factor++;
       continue;
     }
@@ -74,10 +74,16 @@ bool SimpleFactorization::factorize() {
       }
     }      
 
-    nr_of_divisions++;
+#ifdef DEBUG
+    cout << "Test: " << factor << endl;
+#endif
 
+    nr_of_divisions++;
     if (mpz_divisible_p(candidate.get_mpz_t(), 
 			factor.get_mpz_t())) {
+      // determine new candidate for subsequent factorizations
+      candidate = candidate / factor;
+      this->setMax(sqrt(candidate));
       return 1;
     }
     factor++;
@@ -99,7 +105,8 @@ void SimpleFactorization::setMin(const mpz_class &min) {
   if (min > 2)
     range_min = min;
 
-  range_int = range_max - range_min;
+  search_int = range_max - range_min;
+  factor = range_min;
 }
 
 void SimpleFactorization::setMin(const char* min) {
@@ -121,7 +128,8 @@ void SimpleFactorization::setMax(const mpz_class &max) {
   if (max < range_max)
     range_max = max;
 
-  range_int = range_max - range_min;
+  if (range_max - range_min > search_int)
+    search_int = range_max - range_min;
 }
 
 void SimpleFactorization::setMax(const char* max) {
@@ -155,8 +163,8 @@ double SimpleFactorization::getProgress() {
   mpf_class total = factor - range_min;
   mpf_class progress = 0;
 
-  if (range_int > 0) {
-    progress = total / range_int;
+  if (search_int > 0) {
+    progress = total / search_int;
   }
   return progress.get_d();
 }

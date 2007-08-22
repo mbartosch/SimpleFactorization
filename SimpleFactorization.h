@@ -47,7 +47,8 @@ class SimpleFactorization : public CProgressModel {
  protected:
   mpz_class range_min;
   mpz_class range_max;
-  mpz_class range_int;
+  mpz_class search_max;
+  mpz_class search_int;
   mpz_class factor;
   mpz_class candidate;
   long long nr_of_divisions;

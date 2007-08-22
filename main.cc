@@ -1,9 +1,8 @@
 #include <iostream>
 #include <gmpxx.h>
 #include "SimpleFactorization.h"
-// #include "SimpleFactorizationBinary.h"
 
-#define VERSION "0.2.0"
+#define VERSION "0.3.0"
 
 
 using namespace std;
@@ -15,8 +14,9 @@ void usage() {
   cout << "Factorize the specified candidate number using the naive try-to-divide-approach" << endl << endl;
   cout << "Options:" << endl;
   cout << "  --help         this help text" << endl;
-  cout << "  --optimize-3   don't test if sum-of-digits is 3" << endl;
-  cout << "  --optimize-5   don't test if last digit is 5" << endl;
+  cout << "  --full         don't stop after finding a factor, instead fully factorize" << endl;
+  cout << "  --optimize-3   test if sum-of-digits is 3" << endl;
+  cout << "  --optimize-5   test if last digit is 5" << endl;
   cout << "  --optimize     enable all optimizations" << endl;
   cout << "  --min <VALUE>  lower bound for search (default: 2)" << endl;
   cout << "  --max <VALUE>  upper bound for search (default: square root of candidate)" << endl;
@@ -24,11 +24,19 @@ void usage() {
   exit(0);
 }
 
+
+void factorize() {
+
+
+}
+
+
 int main(int argc, char **argv) {
   mpz_class candidate = 0;
   char *min = NULL;
   char *max = NULL;
   int ii;
+  bool opt_full = false;
   unsigned int options = SIMPLE_FACTORIZATION_OPTIMIZE_2;
 
   if (argc == 1) usage();
@@ -60,6 +68,12 @@ int main(int argc, char **argv) {
     if (strcmp(argv[ii], "--verbose") == 0) {
       ii++;
       options |= SIMPLE_FACTORIZATION_VERBOSE;
+      continue;
+    }
+
+    if (strcmp(argv[ii], "--full") == 0) {
+      ii++;
+      opt_full = true;
       continue;
     }
 
@@ -118,11 +132,21 @@ int main(int argc, char **argv) {
     f = factorizer.getFactor();
 
     cout << endl 
-	 << "Found factor: " 
-	 << f << endl;
+	 << "Found factor(s): ";
+
+    cout << f;
+    if (opt_full) {
+      while (factorizer.factorize()) {
+	f = factorizer.getFactor();
+	cout << " * " << f;
+      }
+      cout << " * " << factorizer.getCandidate();
+    }
+
+    cout << endl;
 
     progress = factorizer.getProgress();
-    cout << "(At " << progress * 100 << "% of search range.)" << endl;
+    cout << "(Finished at " << progress * 100 << "% of search range.)" << endl;
     cout << "Performed " << factorizer.getNumberOfDivisions() << " test divisions." << endl;
     
   } else {
