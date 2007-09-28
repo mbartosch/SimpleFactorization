@@ -2,10 +2,36 @@
 #include <gmpxx.h>
 #include "SimpleFactorization.h"
 
-#define VERSION "0.4.0"
-
+#define VERSION "0.5.0"
 
 using namespace std;
+
+SimpleFactorization *factorizer = NULL;
+
+void statistics() {
+  double progress;
+  if (factorizer) {
+    progress = factorizer->getProgress();
+    cout << progress * 100 << " % of search space." << endl;
+    cout << "Performed " << factorizer->getNumberOfDivisions() << " test divisions." << endl;
+  }
+}
+
+void sigint_handler(int) {
+  if (factorizer) {
+    cout << endl << "Caught SIGINT, terminating at ";
+    statistics();
+    cout << "Current test factor: " << factorizer->getFactor() << endl;
+    exit(0);
+  }
+}
+
+void sigusr1_handler(int) {
+  if (factorizer) {
+    cout << endl << "Currently at ";
+    statistics();
+  }
+}
 
 void usage() {
   cout << "simple-factorization v" << VERSION << endl << endl;
@@ -22,11 +48,6 @@ void usage() {
 }
 
 
-void factorize() {
-
-
-}
-
 
 int main(int argc, char **argv) {
   mpz_class candidate = 0;
@@ -37,6 +58,11 @@ int main(int argc, char **argv) {
   unsigned int options = 0;
 
   if (argc == 1) usage();
+
+  if(signal(SIGINT, SIG_IGN) != SIG_IGN)
+    signal(SIGINT, sigint_handler);
+
+  signal(SIGUSR1, sigusr1_handler);
 
   ii = 1;
   /* parse options */
@@ -62,11 +88,13 @@ int main(int argc, char **argv) {
       continue;
     }
 
+#if 0
     if (strcmp(argv[ii], "--verbose") == 0) {
       ii++;
       options |= SIMPLE_FACTORIZATION_VERBOSE;
       continue;
     }
+#endif
 
     if (strcmp(argv[ii], "--full") == 0) {
       ii++;
@@ -89,49 +117,58 @@ int main(int argc, char **argv) {
 
   // 4801 * 10093 = 48456493
 
-  SimpleFactorization factorizer(candidate);
-  factorizer.setOptions(options);
+  factorizer = new SimpleFactorization(candidate);
+  factorizer->setOptions(options);
 
   if (min)
-    factorizer.setMin(min);
+    factorizer->setMin(min);
   if (max)
-    factorizer.setMax(max);
+    factorizer->setMax(max);
 
  
-  cout << endl << "Trying to factorize " << factorizer.getCandidate() << endl;
+  cout << endl << "Trying to ";
+  if (! opt_full)
+    cout << "find the first prime factor of ";
+  else
+    cout << "factorize ";
+  cout << factorizer->getCandidate() << endl;
   cout << "in range: " 
-       << factorizer.getMin() << " - " << factorizer.getMax()
+       << factorizer->getMin() << " - " << factorizer->getMax()
        << endl;
 
-  double progress;
   // factorizer.setRange(0, 15000);
 
-  if (factorizer.factorize()) {
+  if (factorizer->factorize()) {
     mpz_class f;
-    f = factorizer.getFactor();
+    f = factorizer->getFactor();
 
     cout << endl 
-	 << "Found factor(s): ";
+	 << "Found factors: ";
 
     cout << f;
     if (opt_full) {
-      while (factorizer.factorize()) {
-	f = factorizer.getFactor();
+      while (factorizer->factorize()) {
+	f = factorizer->getFactor();
 	cout << " * " << f;
+	fflush(stdout);
       }
-      cout << " * " << factorizer.getCandidate();
+      cout << " * " << factorizer->getCandidate();
     } else {
-      cout << " (lowest factor of factorization)";
+      cout << " * " << factorizer->getCandidate() << endl;
+      cout << "The factorization stopped after finding the first factor, the second factor" << endl;
+      cout << "may be non-prime. (Hint: Use the --full option to get a full factorization)" << endl;
     }
 
     cout << endl;
 
-    progress = factorizer.getProgress();
-    cout << "(Finished at " << progress * 100 << "% of search range.)" << endl;
-    cout << "Performed " << factorizer.getNumberOfDivisions() << " test divisions." << endl;
-    
+    //    if (options & SIMPLE_FACTORIZATION_VERBOSE) {
+    cout << "Finished at ";
+    statistics();
+      //    }
+
   } else {
     cout << "No factorization found." << endl;
   }
+  exit(0);
 }
 
