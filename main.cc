@@ -55,14 +55,17 @@ void sigusr1_handler(int) {
 }
 
 #ifdef WIN32
+int sigusr_count = 0;
 BOOL CtrlHandler(DWORD fdwCtrlType) {
   switch(fdwCtrlType) {
   case CTRL_C_EVENT:
-    sigusr1_handler();
+    sigusr1_handler(0);
+    if (! sigusr_count++)
+      cout << "(Hint: use Ctrl-Break if you wish to terminate the program.)" << endl;
     return(TRUE);
     
   case CTRL_BREAK_EVENT:
-    sigint_handler();
+    sigint_handler(0);
     return(TRUE);
 
   default:
@@ -166,7 +169,7 @@ int _tmain(int argc, _TCHAR **argv) {
 
   signal(SIGUSR1, sigusr1_handler);
 #else
-  SetConsoleHandler((PHANDLER_ROUTINE) CtrlHandler, TRUE);
+  SetConsoleCtrlHandler((PHANDLER_ROUTINE) CtrlHandler, TRUE);
 #endif
 
 
