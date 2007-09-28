@@ -1,3 +1,8 @@
+#ifdef WIN32
+#include "stdafx.h"
+#include <windows.h>
+#endif
+
 #include <iostream>
 #include <gmpxx.h>
 #include "SimpleFactorization.h"
@@ -49,9 +54,29 @@ void sigusr1_handler(int) {
   }
 }
 
+#ifdef WIN32
+BOOL CtrlHandler(DWORD fdwCtrlType) {
+  switch(fdwCtrlType) {
+  case CTRL_C_EVENT:
+    sigusr1_handler();
+    return(TRUE);
+    
+  case CTRL_BREAK_EVENT:
+    sigint_handler();
+    return(TRUE);
+
+  default:
+    return(FALSE);
+  }
+}
+#endif
 
 
+#ifndef WIN32
 int main(int argc, char **argv) {
+#else
+int _tmain(int argc, _TCHAR **argv) {
+#endif
   mpz_class candidate = 0;
   char *min = NULL;
   char *max = NULL;
@@ -135,10 +160,14 @@ int main(int argc, char **argv) {
 
   // factorizer.setRange(0, 15000);
 
+#ifndef WIN32
   if(signal(SIGINT, SIG_IGN) != SIG_IGN)
     signal(SIGINT, sigint_handler);
 
   signal(SIGUSR1, sigusr1_handler);
+#else
+  SetConsoleHandler((PHANDLER_ROUTINE) CtrlHandler, TRUE);
+#endif
 
 
   if (factorizer->factorize()) {
