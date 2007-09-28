@@ -43,6 +43,7 @@ void sigint_handler(int) {
     cout << endl << "Caught SIGINT, terminating at ";
     statistics();
     cout << "Current test factor: " << factorizer->getFactor() << endl;
+    delete factorizer;
     exit(0);
   }
 }
@@ -204,6 +205,7 @@ int _tmain(int argc, _TCHAR **argv) {
   } else {
     cout << "No factorization found." << endl;
   }
+  delete factorizer;
   exit(0);
 }
 
