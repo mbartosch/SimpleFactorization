@@ -9,7 +9,7 @@ SimpleFactorization::SimpleFactorization(mpz_class &arg) {
   candidate = arg;
   this->setRange(2, sqrt(arg));
   factor = 2;
-  options = SIMPLE_FACTORIZATION_OPTIMIZE_2;
+
   nr_of_divisions = 0;
 }
 
@@ -17,88 +17,56 @@ SimpleFactorization::SimpleFactorization(const char* arg) {
   candidate.set_str(arg, 10);
   this->setRange(2, sqrt(candidate));
   factor = 2;
-  options = SIMPLE_FACTORIZATION_OPTIMIZE_2;
+
   nr_of_divisions = 0;
 }
 
 
-bool SimpleFactorization::is_probable_prime(const mpz_class &arg) {
-    if ((options & SIMPLE_FACTORIZATION_OPTIMIZE_2)
-	&& mpz_even_p(arg.get_mpz_t())
-	&& arg != 2) {
-      return false;
-    }
-
-    if ((options & SIMPLE_FACTORIZATION_OPTIMIZE_3) ||
-	(options & SIMPLE_FACTORIZATION_OPTIMIZE_5)) {
-      char* arg_as_string = NULL;
-      arg_as_string = mpz_get_str(NULL, 10, arg.get_mpz_t());
-      char lastdigit = arg_as_string[strlen(arg_as_string) - 1];
-
-      if (options & SIMPLE_FACTORIZATION_OPTIMIZE_5) {
-	if (lastdigit == '5') {
-	  if (arg_as_string) {
-	    free(arg_as_string);
-	    arg_as_string = NULL;
-	  }
-	  return false;
-	}
-      }
-
-      if (options & SIMPLE_FACTORIZATION_OPTIMIZE_3) {
-	int sum_of_digits = 0;
-	int len, ii;
-	len = strlen(arg_as_string);
-	
-	for (ii = 0; ii < len; ii++) {
-	  sum_of_digits += arg_as_string[ii] - '0';
-	}
-	
-	if (sum_of_digits % 3 == 0) {
-	  if (arg_as_string) {
-	    free(arg_as_string);
-	    arg_as_string = NULL;
-	  }
-	  return false;
-	}
-      }
-
-      if (arg_as_string) {
-	free(arg_as_string);
-	arg_as_string = NULL;
-      }
-    }  
-
-    return true;
-}
-
-
 bool SimpleFactorization::factorize() {
+  int mod30;
+  mpz_class mpz_mod30;
+
   if (range_max < range_min)
     return false;
 
   if (factor < 2)
     factor = 2;
-
+  
+  mpz_mod30 = factor % 30;
+  mod30 = mpz_mod30.get_si();
+  
   while (factor <= range_max) {
-    if (! this->is_probable_prime(factor)) {
+    if (! (mod30 == 1 ||
+	   mod30 == 7 ||
+	   mod30 == 11 ||
+	   mod30 == 13 ||
+	   mod30 == 17 ||
+	   mod30 == 19 ||
+	   mod30 == 23 ||
+	   mod30 == 29 ||
+	   factor == 2 ||
+	   factor == 3 ||
+	   factor == 5)) {
       factor++;
+      ++mod30 %= 30;
       continue;
     }
-
+    
 #ifdef DEBUG
     cout << "Test: " << factor << endl;
 #endif
-
+    
     nr_of_divisions++;
     if (mpz_divisible_p(candidate.get_mpz_t(), 
 			factor.get_mpz_t())) {
       // determine new candidate for subsequent factorizations
       candidate = candidate / factor;
       this->setMax(sqrt(candidate));
-      return 1;
+      return true;
     }
     factor++;
+    ++mod30 %= 30;
+    
   }
   return false;
 }

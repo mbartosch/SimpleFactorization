@@ -2,7 +2,7 @@
 #include <gmpxx.h>
 #include "SimpleFactorization.h"
 
-#define VERSION "0.3.0"
+#define VERSION "0.4.0"
 
 
 using namespace std;
@@ -15,9 +15,6 @@ void usage() {
   cout << "Options:" << endl;
   cout << "  --help         this help text" << endl;
   cout << "  --full         don't stop after finding a factor, instead fully factorize" << endl;
-  cout << "  --optimize-3   test if sum-of-digits is 3" << endl;
-  cout << "  --optimize-5   test if last digit is 5" << endl;
-  cout << "  --optimize     enable all optimizations" << endl;
   cout << "  --min <VALUE>  lower bound for search (default: 2)" << endl;
   cout << "  --max <VALUE>  upper bound for search (default: square root of candidate)" << endl;
   cout << endl;
@@ -37,7 +34,7 @@ int main(int argc, char **argv) {
   char *max = NULL;
   int ii;
   bool opt_full = false;
-  unsigned int options = SIMPLE_FACTORIZATION_OPTIMIZE_2;
+  unsigned int options = 0;
 
   if (argc == 1) usage();
 
@@ -77,24 +74,6 @@ int main(int argc, char **argv) {
       continue;
     }
 
-    if (strcmp(argv[ii], "--optimize-3") == 0) {
-      ii++;
-      options |= SIMPLE_FACTORIZATION_OPTIMIZE_3;
-      continue;
-    }
-
-    if (strcmp(argv[ii], "--optimize-5") == 0) {
-      ii++;
-      options |= SIMPLE_FACTORIZATION_OPTIMIZE_5;
-      continue;
-    }
-
-    if (strcmp(argv[ii], "--optimize") == 0) {
-      ii++;
-      options |= SIMPLE_FACTORIZATION_OPTIMIZE_3;
-      options |= SIMPLE_FACTORIZATION_OPTIMIZE_5;
-      continue;
-    }
 
     if (*argv[ii] == '-') {
       fprintf(stderr, "Unrecognized option %s\n", argv[ii]);

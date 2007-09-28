@@ -1,5 +1,5 @@
 #DEBUG=-DDEBUG
-CXXFLAGS=-I/opt/local/include -g $(DEBUG)
+CXXFLAGS=-I/opt/local/include -O3 -g $(DEBUG)
 LDFLAGS=-L/opt/local/lib -lgmp -lgmpxx
 
 OBJ=SimpleFactorization.o

@@ -6,10 +6,6 @@
 #define SIMPLE_FACTORIZATION_VERBOSE    0x0001
 #define SIMPLE_FACTORIZATION_STATISTICS 0x0002
 
-#define SIMPLE_FACTORIZATION_OPTIMIZE_2 0x0100
-#define SIMPLE_FACTORIZATION_OPTIMIZE_3 0x0200
-#define SIMPLE_FACTORIZATION_OPTIMIZE_5 0x0400
-
 class CProgressModel 
 { 
  public: 
@@ -45,7 +41,7 @@ class SimpleFactorization : public CProgressModel {
   virtual double getProgress();
   
  protected:
-  virtual bool is_probable_prime(const mpz_class &arg);
+  //  virtual bool is_probable_prime(const mpz_class &arg);
 
   mpz_class range_min;
   mpz_class range_max;
