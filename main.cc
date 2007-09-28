@@ -8,6 +8,22 @@ using namespace std;
 
 SimpleFactorization *factorizer = NULL;
 
+
+void usage() {
+  cout << "simple-factorization v" << VERSION << endl << endl;
+  cout << "Usage:" << endl;
+  cout << "simple-factorization [OPTIONS] candidate" << endl << endl;
+  cout << "Factorize the specified candidate number using the naive try-to-divide-approach" << endl << endl;
+  cout << "Options:" << endl;
+  cout << "  --help         this help text" << endl;
+  cout << "  --full         don't stop after finding a factor, instead fully factorize" << endl;
+  cout << "  --min <VALUE>  lower bound for search (default: 2)" << endl;
+  cout << "  --max <VALUE>  upper bound for search (default: square root of candidate)" << endl;
+  cout << endl;
+  exit(0);
+}
+
+
 void statistics() {
   double progress;
   if (factorizer) {
@@ -33,20 +49,6 @@ void sigusr1_handler(int) {
   }
 }
 
-void usage() {
-  cout << "simple-factorization v" << VERSION << endl << endl;
-  cout << "Usage:" << endl;
-  cout << "simple-factorization [OPTIONS] candidate" << endl << endl;
-  cout << "Factorize the specified candidate number using the naive try-to-divide-approach" << endl << endl;
-  cout << "Options:" << endl;
-  cout << "  --help         this help text" << endl;
-  cout << "  --full         don't stop after finding a factor, instead fully factorize" << endl;
-  cout << "  --min <VALUE>  lower bound for search (default: 2)" << endl;
-  cout << "  --max <VALUE>  upper bound for search (default: square root of candidate)" << endl;
-  cout << endl;
-  exit(0);
-}
-
 
 
 int main(int argc, char **argv) {
@@ -58,11 +60,6 @@ int main(int argc, char **argv) {
   unsigned int options = 0;
 
   if (argc == 1) usage();
-
-  if(signal(SIGINT, SIG_IGN) != SIG_IGN)
-    signal(SIGINT, sigint_handler);
-
-  signal(SIGUSR1, sigusr1_handler);
 
   ii = 1;
   /* parse options */
@@ -137,6 +134,12 @@ int main(int argc, char **argv) {
        << endl;
 
   // factorizer.setRange(0, 15000);
+
+  if(signal(SIGINT, SIG_IGN) != SIG_IGN)
+    signal(SIGINT, sigint_handler);
+
+  signal(SIGUSR1, sigusr1_handler);
+
 
   if (factorizer->factorize()) {
     mpz_class f;
