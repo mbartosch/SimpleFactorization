@@ -40,7 +40,7 @@ void statistics() {
 
 void sigint_handler(int) {
   if (factorizer) {
-    cout << endl << "Caught SIGINT, terminating at ";
+    cout << endl << "User requested program termination at ";
     statistics();
     cout << "Current test factor: " << factorizer->getFactor() << endl;
     delete factorizer;
