@@ -7,12 +7,11 @@
 #include <gmpxx.h>
 #include "SimpleFactorization.h"
 
-#define VERSION "0.5.0"
+#define VERSION "0.5.1"
 
 using namespace std;
 
 SimpleFactorization *factorizer = NULL;
-
 
 void usage() {
   cout << "simple-factorization v" << VERSION << endl << endl;
@@ -86,7 +85,6 @@ int _tmain(int argc, _TCHAR **argv) {
   char *max = NULL;
   int ii;
   bool opt_full = false;
-  unsigned int options = 0;
 
   if (argc == 1) usage();
 
@@ -114,13 +112,6 @@ int _tmain(int argc, _TCHAR **argv) {
       continue;
     }
 
-#if 0
-    if (strcmp(argv[ii], "--verbose") == 0) {
-      ii++;
-      options |= SIMPLE_FACTORIZATION_VERBOSE;
-      continue;
-    }
-#endif
 
     if (strcmp(argv[ii], "--full") == 0) {
       ii++;
@@ -144,7 +135,6 @@ int _tmain(int argc, _TCHAR **argv) {
   // 4801 * 10093 = 48456493
 
   factorizer = new SimpleFactorization(candidate);
-  factorizer->setOptions(options);
 
   if (min)
     factorizer->setMin(min);
@@ -197,7 +187,6 @@ int _tmain(int argc, _TCHAR **argv) {
 
     cout << endl;
 
-    //    if (options & SIMPLE_FACTORIZATION_VERBOSE) {
     cout << "Finished at ";
     statistics();
       //    }

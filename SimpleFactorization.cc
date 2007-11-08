@@ -71,14 +71,6 @@ bool SimpleFactorization::factorize() {
   return false;
 }
 
-void SimpleFactorization::setOptions(const unsigned int arg) {
-  options = arg;
-}
-
-unsigned int SimpleFactorization::getOptions() {
-  return options;
-}
-
 void SimpleFactorization::setMin(const mpz_class &min) {
   range_min = 2;
 

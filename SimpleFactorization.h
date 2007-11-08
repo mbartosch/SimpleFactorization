@@ -3,9 +3,7 @@
 
 #include <gmpxx.h>
 
-#define SIMPLE_FACTORIZATION_VERBOSE    0x0001
-#define SIMPLE_FACTORIZATION_STATISTICS 0x0002
-
+// stub class as defined by CrypTool
 class CProgressModel 
 { 
  public: 
@@ -18,9 +16,6 @@ class SimpleFactorization : public CProgressModel {
   SimpleFactorization(mpz_class &arg);
   SimpleFactorization(const char* arg);
 
-  virtual void setOptions(const unsigned int arg);
-  virtual unsigned int getOptions();
-  
   virtual void setMin(const mpz_class &min);
   virtual void setMin(const char* arg);
   virtual const mpz_class& getMin();
@@ -45,13 +40,10 @@ class SimpleFactorization : public CProgressModel {
 
   mpz_class range_min;
   mpz_class range_max;
-  mpz_class search_max;
   mpz_class search_int;
   mpz_class factor;
   mpz_class candidate;
-  long long nr_of_divisions;
-
-  unsigned int options;
+  unsigned long long nr_of_divisions;
 };
 
 
