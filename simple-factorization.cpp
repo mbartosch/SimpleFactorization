@@ -9,7 +9,7 @@
 #include <gmpxx.h>
 #include "SimpleFactorization.h"
 
-#define VERSION "0.5.1"
+#define VERSION "0.5.2"
 
 using namespace std;
 
@@ -24,7 +24,8 @@ void usage() {
   cout << "  --help         this help text" << endl;
   cout << "  --full         don't stop after finding a factor, instead fully factorize" << endl;
   cout << "  --min <VALUE>  lower bound for search (default: 2)" << endl;
-  cout << "  --max <VALUE>  upper bound for search (default: square root of candidate)" << endl;
+  cout << "  --max <VALUE>  upper bound for search (default: square root of)" << endl;
+  cout << "                 candidate)" << endl;
   cout << endl;
   exit(0);
 }
