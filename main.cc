@@ -3,6 +3,8 @@
 #include <windows.h>
 #endif
 
+#include <stdlib.h>
+#include <signal.h>
 #include <iostream>
 #include <gmpxx.h>
 #include "SimpleFactorization.h"
