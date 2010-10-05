@@ -154,8 +154,6 @@ int _tmain(int argc, _TCHAR **argv) {
        << factorizer->getMin() << " - " << factorizer->getMax()
        << endl;
 
-  // factorizer.setRange(0, 15000);
-
 #ifndef WIN32
   if(signal(SIGINT, SIG_IGN) != SIG_IGN)
     signal(SIGINT, sigint_handler);
@@ -191,7 +189,6 @@ int _tmain(int argc, _TCHAR **argv) {
 
     cout << "Finished at ";
     statistics();
-      //    }
 
   } else {
     cout << "No factorization found." << endl;

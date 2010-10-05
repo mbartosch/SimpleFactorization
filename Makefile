@@ -2,12 +2,12 @@
 CXXFLAGS=-I/opt/local/include -O3 -g $(DEBUG)
 LDFLAGS=-L/opt/local/lib -lgmp -lgmpxx
 
-OBJ=SimpleFactorization.o
+OBJ=simple-factorization.o SimpleFactorization.o
 
 all: simple-factorization
 
-simple-factorization: main.o $(OBJ)
-	g++ $(LDFLAGS) -o $@ $< $(OBJ)
+simple-factorization: $(OBJ)
+	g++ $(LDFLAGS) -o $@ $(OBJ)
 
 
 clean:
