@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <iostream>
+#include <iomanip>
 #include <gmpxx.h>
 #include "SimpleFactorization.h"
 
@@ -27,7 +28,7 @@ void usage() {
   cout << "  --max <VALUE>  upper bound for search (default: square root of)" << endl;
   cout << "                 candidate)" << endl;
   cout << endl;
-  exit(0);
+  exit(1);
 }
 
 
@@ -35,7 +36,7 @@ void statistics() {
   double progress;
   if (factorizer) {
     progress = factorizer->getProgress();
-    cout << progress * 100 << " % of search space." << endl;
+    cout << setprecision(3) << progress * 100 << " % of search space." << endl;
     cout << "Performed " << factorizer->getNumberOfDivisions() << " test divisions." << endl;
   }
 }
@@ -46,7 +47,7 @@ void sigint_handler(int) {
     statistics();
     cout << "Current test factor: " << factorizer->getFactor() << endl;
     delete factorizer;
-    exit(0);
+    exit(1);
   }
 }
 
@@ -190,11 +191,13 @@ int _tmain(int argc, _TCHAR **argv) {
 
     cout << "Finished at ";
     statistics();
+    delete factorizer;
+    exit(0);
 
   } else {
     cout << "No factorization found." << endl;
+    delete factorizer;
+    exit(1);
   }
-  delete factorizer;
-  exit(0);
 }
 
