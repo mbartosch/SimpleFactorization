@@ -1,0 +1,15 @@
+simple-factorization v1.0.0
+
+Usage:
+simple-factorization [OPTIONS] candidate
+
+Factorize the specified candidate number using the naive try-to-divide-approach
+
+Options:
+  --help         this help text
+  --full         don't stop after finding a factor, instead fully factorize
+  --min <VALUE>  lower bound for search (default: 2)
+  --max <VALUE>  upper bound for search (default: square root of)
+                 candidate)
+
+

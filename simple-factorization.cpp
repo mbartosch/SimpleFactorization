@@ -10,7 +10,7 @@
 #include <gmpxx.h>
 #include "SimpleFactorization.h"
 
-#define VERSION "0.5.2"
+#define VERSION "1.0.0"
 
 using namespace std;
 
